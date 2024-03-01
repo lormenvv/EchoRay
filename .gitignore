@@ -4,3 +4,5 @@ out
 .idea
 .vs
 .vscode
+*.iml
+cmake-build-debug
