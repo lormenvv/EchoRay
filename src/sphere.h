@@ -2,20 +2,26 @@
 #define SPHERE_H
 
 #include <glm/vec4.hpp>
-#include <vector>
-#include <random>
-#include <string>
-#include <iostream>
+#include "glm/geometric.hpp"
+
+
+static int id = 0;
 
 class Sphere {
 public:
-	Sphere();
+	Sphere() {
+		m_origin = glm::dvec4(0, 0, 0, 1);
+		m_radius = 1.0;
+		id++;
+	}
+	bool operator==(const Sphere& other) const;
+	glm::dvec4 getOrigin() const;
+	double getRadius() const;
 private:
-	glm::dvec4 origin;
-	double radius;
+	glm::dvec4 m_origin;
+	double m_radius;
 };
 
-std::vector<double> intersect();
 
 
 #endif
