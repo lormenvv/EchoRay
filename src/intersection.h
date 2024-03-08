@@ -1,6 +1,7 @@
-#ifndef HIT_H
-#define HIT_H
+#ifndef INTERSECTION_H
+#define INTERSECTION_H
 #include <vector>
+#include <algorithm>
 #include "sphere.h"
 
 class Intersection {
@@ -29,14 +30,20 @@ public:
         return m_sphere == rhs.getObject() && m_t == rhs.getT();
     }
 
+    static void sort(std::vector<Intersection> &intersections) {
+        std::sort(intersections.begin(), intersections.end(), [](const Intersection &lhs, const Intersection &rhs) {
+            return lhs.getT() < rhs.getT();
+        });
+    }
+
 private:
     double m_t;
     Sphere m_sphere;
 };
 
-Intersection hit(std::vector<Intersection> intersections);
+Intersection hit(std::vector<Intersection> &intersections);
 
 
 
 
-#endif //HIT_H
+#endif //INTERSECTION_H

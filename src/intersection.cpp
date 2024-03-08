@@ -2,20 +2,21 @@
 
 Intersection hit(std::vector<Intersection> &intersections)
 {
-    double lowestT = std::numeric_limits<double>::infinity();
-    Intersection closestHit;
+    Intersection::sort(intersections);
+    Intersection closestHit = Intersection(-std::numeric_limits<double>::infinity(), Sphere());
+    /* Because list is already sorted, and we know the lowest nonnegative t is the hit, we just return
+     * the first t value that is nonnegative and then we can break */
+
     for (auto intersection : intersections)
     {
-        if (intersection.getT() < 0)
+        if (intersection.getT() > 0)
         {
-            continue;
-        }
-        if (intersection.getT() < lowestT)
-        {
-            lowestT = intersection.getT();
             closestHit = intersection;
+            break;
         }
     }
     return closestHit;
 }
+
+
 

@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
-#include <glm/vec3.hpp>
-#include <glm/vec4.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include "../src/ray.h"
 #include "../src/sphere.h"
 #include "../src/utility.h"
@@ -112,3 +113,66 @@ TEST(RaySphereTests, AllIntersectionsNegativeT)
     ASSERT_FALSE(i == i2);
 }
 
+TEST(RaySphereTests, LowestNonnegativeIntersection)
+{
+    auto s = Sphere();
+    auto i1 = Intersection(5, s);
+    auto i2 = Intersection(7, s);
+    auto i3 = Intersection(-3, s);
+    auto i4 = Intersection(2, s);
+    auto xs = std::vector<Intersection> { i1, i2, i3, i4 };
+    auto i = hit(xs);
+    ASSERT_TRUE(i == i4);
+}
+
+TEST(RaySphereTests, TranslateRay)
+{
+    auto ray = Ray(glm::dvec3(1, 2, 3), glm::dvec3(0, 1, 0));
+    const auto m = glm::translate(glm::dmat4(1.0f), glm::dvec3(3, 4, 5));
+    const auto transformedRay = ray.transform(m);
+    ASSERT_TRUE(isEqual(transformedRay.getOrigin(), glm::dvec4(4, 6, 8, 1)));
+    ASSERT_TRUE(isEqual(transformedRay.getDirection(), glm::dvec4(0, 1, 0, 0)));
+}
+
+TEST(RaySphereTests, ScalingRay)
+{
+    auto ray = Ray(glm::dvec3(1, 2, 3), glm::dvec3(0, 1, 0));
+    const auto m = glm::scale(glm::dmat4(1.0), glm::dvec3(2, 3, 4));
+    const auto transformedRay = ray.transform(m);
+    ASSERT_TRUE(isEqual(transformedRay.getOrigin(), glm::dvec4(2, 6, 12, 1)));
+    ASSERT_TRUE(isEqual(transformedRay.getDirection(), glm::dvec4(0, 3, 0, 0)));
+}
+
+TEST(RaySphereTests, SphereDefaultTransformation)
+{
+    auto s = Sphere();
+    ASSERT_TRUE(s.getTransform() == glm::dmat4(1.0));
+}
+
+TEST(RaySphereTests, ChangingSphereTransformation)
+{
+    auto s = Sphere();
+    auto t = glm::translate(glm::dmat4(1.0), glm::dvec3(2, 3, 4));
+    s.setTransform(t);
+    ASSERT_TRUE(s.getTransform() == t);
+}
+
+TEST(RaySphereTests, IntersectingScaledSphereWithRay)
+{
+    auto r = Ray(glm::dvec3(0, 0, -5), glm::dvec3(0, 0, 1));
+    auto s = Sphere();
+    s.setTransform(glm::scale(glm::dmat4(1.0), glm::dvec3(2, 2, 2)));
+    auto xs = intersect(s, r);
+    ASSERT_EQ(xs.size(), 2);
+    ASSERT_FLOAT_EQ(xs[0].getT(), 3.0);
+    ASSERT_FLOAT_EQ(xs[1].getT(), 7.0);
+}
+
+TEST(RaySphereTests, IntersectingTranslatedSphereWithRay)
+{
+    auto r = Ray(glm::dvec3(0, 0, -5), glm::dvec3(0, 0, 1));
+    auto s = Sphere();
+    s.setTransform(glm::translate(glm::dmat4(1.0), glm::dvec3(5, 0, 0)));
+    auto xs = intersect(s, r);
+    ASSERT_EQ(xs.size(), 0);
+}

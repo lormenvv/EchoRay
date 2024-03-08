@@ -13,5 +13,14 @@ double Sphere::getRadius() const
 {
 	return m_radius;
 }
+glm::dmat4 Sphere::getTransform() const
+{
+	return m_transform;
+}
+void Sphere::setTransform(glm::dmat4 transformation)
+{
+	m_transform = transformation;
+}
+
 
 

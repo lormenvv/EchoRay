@@ -19,9 +19,10 @@ void toString(glm::dvec4 v)
 
 std::vector<Intersection> intersect(Sphere sphere, Ray ray) {
 	std::vector<Intersection> intersections;
-	auto sphereToRay = ray.getOrigin() - glm::dvec4(0, 0, 0, 1);
-	double a = glm::dot(ray.getDirection(), ray.getDirection());
-	double b = 2 * glm::dot(ray.getDirection(), sphereToRay);
+	auto transRay = ray.transform(glm::inverse(sphere.getTransform()));
+	auto sphereToRay = transRay.getOrigin() - glm::dvec4(0, 0, 0, 1);
+	double a = glm::dot(transRay.getDirection(), transRay.getDirection());
+	double b = 2 * glm::dot(transRay.getDirection(), sphereToRay);
 	double c = glm::dot(sphereToRay, sphereToRay) - 1;
 
 	double discriminant = b*b - 4 * a * c;
