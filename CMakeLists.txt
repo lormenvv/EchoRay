@@ -39,8 +39,7 @@ file(GLOB_RECURSE TESTS
         tests/*.cc)
 
 add_executable(EchoRay ${SOURCES}
-        src/intersection.cpp
-        src/intersection.h)
+        src/pointlight.h)
 target_link_libraries(EchoRay PRIVATE sfml-graphics sfml-window glm)
 target_compile_features(EchoRay PRIVATE cxx_std_23)
 
