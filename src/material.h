@@ -7,13 +7,13 @@ class Material
 public:
     Material()
     {
-        m_color = glm::vec3(1, 1, 1);
+        m_color = glm::dvec3(1, 1, 1);
         m_ambient = 0.1;
         m_diffuse = 0.9;
         m_specular = 0.9;
         m_shininess = 200.0;
     }
-    Material(glm::vec3 color, double ambient, double diffuse, double specular, double shininess)
+    Material(glm::dvec3 color, double ambient, double diffuse, double specular, double shininess)
     {
         m_color = color;
         m_ambient = ambient;
@@ -26,7 +26,7 @@ public:
         return m_color == other.getColor() && m_ambient == other.getAmbient() && m_diffuse == other.getDiffuse() &&
             m_specular == other.getSpecular() && m_shininess == other.getShininess();
     }
-    glm::vec3 getColor() const
+    glm::dvec3 getColor() const
     {
         return m_color;
     }
@@ -46,7 +46,7 @@ public:
     {
         return m_shininess;
     }
-    void setColor(glm::vec3 color)
+    void setColor(glm::dvec3 color)
     {
         m_color = color;
     }
@@ -67,7 +67,7 @@ public:
         m_shininess = shininess;
     }
 private:
-    glm::vec3 m_color;
+    glm::dvec3 m_color{};
     double m_ambient, m_diffuse, m_specular, m_shininess;
 };
 

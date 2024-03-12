@@ -9,7 +9,7 @@
 
 struct PointLight
 {
-    glm::vec3 intensity;
+    glm::dvec3 intensity;
     glm::dvec4 position;
 };
 

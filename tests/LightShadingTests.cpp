@@ -114,3 +114,68 @@ TEST(LightShadingTests, SphereAssignedMaterial)
     ASSERT_TRUE(s.getMaterial() == m);
 }
 
+TEST(LightShadingTests, LightingWithEyeBetweenLightAndSurface)
+{
+    auto m = Material();
+    auto position = glm::dvec4(0, 0, 0, 1);
+    auto eyeVector = glm::dvec4(0, 0, -1, 0);
+    auto normalVector = glm::dvec4(0, 0, -1, 0);
+    auto intensity = glm::vec3(1, 1, 1);
+    auto lightPosition = glm::dvec4(0, 0, -10, 1);
+    auto light = PointLight {intensity, lightPosition};
+    auto result = lighting(m, light, position, eyeVector, normalVector);
+    ASSERT_TRUE(result == glm::dvec3(1.9, 1.9, 1.9));
+}
+
+TEST(LightShadingTests, EyeOffset45Degrees)
+{
+    auto m = Material();
+    auto position = glm::dvec4(0, 0, 0, 1);
+    auto eyeVector = glm::dvec4(0, sqrt(2)/2, -sqrt(2)/2, 0);
+    auto normalVector = glm::dvec4(0, 0, -1, 0);
+    auto intensity = glm::vec3(1, 1, 1);
+    auto lightPosition = glm::dvec4(0, 0, -10, 1);
+    auto light = PointLight {intensity, lightPosition};
+    auto result = lighting(m, light, position, eyeVector, normalVector);
+    ASSERT_TRUE(isEqual(result, glm::vec3(1.0, 1.0, 1.0)));
+}
+
+TEST(LightShadingTests, LightOffset45Degrees)
+{
+    auto m = Material();
+    auto position = glm::dvec4(0, 0, 0, 1);
+    auto eyeVector = glm::dvec4(0, 0, -1, 0);
+    auto normalVector = glm::dvec4(0, 0, -1, 0);
+    auto intensity = glm::vec3(1, 1, 1);
+    auto lightPosition = glm::dvec4(0, 10, -10, 1);
+    auto light = PointLight {intensity, lightPosition};
+    auto result = lighting(m, light, position, eyeVector, normalVector);
+    ASSERT_TRUE(isEqual(result, glm::vec3(0.7364, 0.7364, 0.7364)));
+}
+
+TEST(LightShadingTests, EyeInPathOfReflection)
+{
+    auto m = Material();
+    auto position = glm::dvec4(0, 0, 0, 1);
+    auto eyeVector = glm::dvec4(0, -sqrt(2)/2, -sqrt(2)/2, 0);
+    auto normalVector = glm::dvec4(0, 0, -1, 0);
+    auto intensity = glm::vec3(1, 1, 1);
+    auto lightPosition = glm::dvec4(0, 10, -10, 1);
+    auto light = PointLight {intensity, lightPosition};
+    auto result = lighting(m, light, position, eyeVector, normalVector);
+    ASSERT_TRUE(isEqual(result, glm::vec3(1.6364, 1.6364, 1.6364)));
+}
+
+TEST(LightShadingTests, LightBehindSurface)
+{
+    auto m = Material();
+    auto position = glm::dvec4(0, 0, 0, 1);
+    auto eyeVector = glm::dvec4(0, 0, -1, 0);
+    auto normalVector = glm::dvec4(0, 0, -1, 0);
+    auto intensity = glm::vec3(1, 1, 1);
+    auto lightPosition = glm::dvec4(0, 0, 10, 1);
+    auto light = PointLight {intensity, lightPosition};
+    auto result = lighting(m, light, position, eyeVector, normalVector);
+    toString(result);
+    ASSERT_TRUE(isEqual(result, glm::vec3(0.1, 0.1, 0.1)));
+}

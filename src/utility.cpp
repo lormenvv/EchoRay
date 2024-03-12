@@ -21,6 +21,12 @@ void toString(glm::dvec4 v)
 	+ std::to_string(v.z) + "\n W: " + std::to_string(v.w) << std::endl;
 }
 
+void toString(glm::dvec3 v)
+{
+	std::cout << "X: " + std::to_string(v.x) + "\n Y: " + std::to_string(v.y) + "\n Z: "
+	+ std::to_string(v.z) << std::endl;
+}
+
 std::vector<Intersection> intersect(Sphere sphere, Ray ray) {
 	std::vector<Intersection> intersections;
 	auto transRay = ray.transform(glm::inverse(sphere.getTransform()));
@@ -40,4 +46,37 @@ std::vector<Intersection> intersect(Sphere sphere, Ray ray) {
 glm::dvec4 reflect(glm::dvec4 in, glm::dvec4 normal)
 {
 	return in - normal * 2.0 * glm::dot(in, normal);
+}
+
+
+glm::dvec3 lighting(Material material, PointLight light, glm::dvec4 point, glm::dvec4 eye, glm::dvec4 normal)
+{
+	auto effectiveColor = material.getColor() * light.intensity;
+	auto lightVector = glm::normalize(light.position - point);
+	auto ambient = effectiveColor * material.getAmbient();
+	auto lightDotNormal = glm::dot(lightVector, normal);
+	glm::dvec3 diffuse, specular;
+
+	if (lightDotNormal < 0)
+	{
+		diffuse = glm::dvec3(0, 0, 0);
+		specular = glm::dvec3(0, 0, 0);
+	}
+	else
+	{
+		diffuse = effectiveColor * material.getDiffuse() * lightDotNormal;
+		auto reflectionVector = reflect(-lightVector, normal);
+		auto reflectDotEye = glm::dot(reflectionVector, eye);
+		if (reflectDotEye <= 0)
+		{
+			specular = glm::vec3(0, 0, 0);
+		}
+		else
+		{
+			auto factor = glm::pow(reflectDotEye, material.getShininess());
+			specular = light.intensity * material.getSpecular() * factor;
+		}
+	}
+	;
+	return ambient + diffuse + specular;
 }
