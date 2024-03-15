@@ -10,10 +10,10 @@
 TEST(RaySphereTests, PointDistanceComputation)
 {
     auto ray = Ray(glm::dvec3(2, 3, 4), glm::dvec3(1, 0, 0));
-    ASSERT_TRUE(isEqual(ray.position(0), glm::dvec4(2, 3, 4, 1)));
-    ASSERT_TRUE(isEqual(ray.position(1), glm::dvec4(3, 3, 4, 1)));
-    ASSERT_TRUE(isEqual(ray.position(-1), glm::dvec4(1, 3, 4, 1)));
-    ASSERT_TRUE(isEqual(ray.position(2.5), glm::dvec4(4.5, 3, 4, 1)));
+    ASSERT_TRUE(ray.position(0) == glm::dvec4(2, 3, 4, 1));
+    ASSERT_TRUE(ray.position(1) == glm::dvec4(3, 3, 4, 1));
+    ASSERT_TRUE(ray.position(-1) == glm::dvec4(1, 3, 4, 1));
+    ASSERT_TRUE(ray.position(2.5) == glm::dvec4(4.5, 3, 4, 1));
 }
 
 TEST(RaySphereTests, RaySphereIntersectionTwoPoints)
@@ -130,8 +130,8 @@ TEST(RaySphereTests, TranslateRay)
     auto ray = Ray(glm::dvec3(1, 2, 3), glm::dvec3(0, 1, 0));
     const auto m = glm::translate(glm::dmat4(1.0f), glm::dvec3(3, 4, 5));
     const auto transformedRay = ray.transform(m);
-    ASSERT_TRUE(isEqual(transformedRay.getOrigin(), glm::dvec4(4, 6, 8, 1)));
-    ASSERT_TRUE(isEqual(transformedRay.getDirection(), glm::dvec4(0, 1, 0, 0)));
+    ASSERT_TRUE(transformedRay.getOrigin() == glm::dvec4(4, 6, 8, 1));
+    ASSERT_TRUE(transformedRay.getDirection() == glm::dvec4(0, 1, 0, 0));
 }
 
 TEST(RaySphereTests, ScalingRay)
@@ -139,8 +139,8 @@ TEST(RaySphereTests, ScalingRay)
     auto ray = Ray(glm::dvec3(1, 2, 3), glm::dvec3(0, 1, 0));
     const auto m = glm::scale(glm::dmat4(1.0), glm::dvec3(2, 3, 4));
     const auto transformedRay = ray.transform(m);
-    ASSERT_TRUE(isEqual(transformedRay.getOrigin(), glm::dvec4(2, 6, 12, 1)));
-    ASSERT_TRUE(isEqual(transformedRay.getDirection(), glm::dvec4(0, 3, 0, 0)));
+    ASSERT_TRUE(transformedRay.getOrigin() == glm::dvec4(2, 6, 12, 1));
+    ASSERT_TRUE(transformedRay.getDirection() == glm::dvec4(0, 3, 0, 0));
 }
 
 TEST(RaySphereTests, SphereDefaultTransformation)

@@ -11,6 +11,10 @@ struct PointLight
 {
     glm::dvec3 intensity;
     glm::dvec4 position;
+    bool isEqual(PointLight p) const
+    {
+        return intensity == p.intensity && position == p.position;
+    }
 };
 
 #endif //POINTLIGHT_H

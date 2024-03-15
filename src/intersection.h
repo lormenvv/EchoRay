@@ -25,8 +25,6 @@ public:
     }
 
     bool operator==(const Intersection &rhs) const {
-        //std::cout << m_t << std::endl;
-        //std::cout << m_sphere.getOrigin().x << m_sphere.getOrigin().y << m_sphere.getOrigin().z << m_sphere.getRadius() << std::endl;
         return m_sphere == rhs.getObject() && m_t == rhs.getT();
     }
 

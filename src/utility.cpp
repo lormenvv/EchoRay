@@ -43,6 +43,21 @@ std::vector<Intersection> intersect(Sphere sphere, Ray ray) {
 	return intersections;
 }
 
+std::vector<Intersection> worldIntersect(World world, Ray ray)
+{
+	std::vector<Intersection> worldIntersections;
+	for (auto object : world.getObjects())
+	{
+		auto localIntersections = intersect(object, ray);
+		for (auto intersection : localIntersections)
+		{
+			worldIntersections.push_back(intersection);
+		}
+	}
+	Intersection::sort(worldIntersections);
+	return worldIntersections;
+}
+
 glm::dvec4 reflect(glm::dvec4 in, glm::dvec4 normal)
 {
 	return in - normal * 2.0 * glm::dot(in, normal);
@@ -79,4 +94,23 @@ glm::dvec3 lighting(Material material, PointLight light, glm::dvec4 point, glm::
 	}
 	;
 	return ambient + diffuse + specular;
+}
+
+glm::u8vec3 toRGB(glm::dvec3 color)
+{
+	auto rgbColor = glm::dvec3(color.r, color.g, color.b) * 255.0;
+
+	if (rgbColor.r > 255.0)
+	{
+		rgbColor.r = 255.0;
+	}
+	if (rgbColor.g > 255.0)
+	{
+		rgbColor.g = 255.0;
+	}
+	if (rgbColor.b > 255.0)
+	{
+		rgbColor.b = 255.0;
+	}
+	return glm::u8vec3(rgbColor.r, rgbColor.g, rgbColor.b);
 }

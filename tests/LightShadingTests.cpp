@@ -12,35 +12,35 @@ TEST(LightShadingTests, NormalAtPointOnXAxis)
 {
     auto s = Sphere();
     auto n = s.normalAt(glm::dvec4(1, 0, 0, 1));
-    ASSERT_TRUE(isEqual(n, glm::dvec4(1, 0, 0, 0)));
+    ASSERT_TRUE(n == glm::dvec4(1, 0, 0, 0));
 }
 
 TEST(LightShadingTests, NormalAtPointOnYAxis)
 {
     auto s = Sphere();
     auto n = s.normalAt(glm::dvec4(0, 1, 0, 1));
-    ASSERT_TRUE(isEqual(n, glm::dvec4(0, 1, 0, 0)));
+    ASSERT_TRUE(n == glm::dvec4(0, 1, 0, 0));
 }
 
 TEST(LightShadingTests, NormalAtPointOnZAxis)
 {
     auto s = Sphere();
     auto n = s.normalAt(glm::dvec4(0, 0, 1, 1));
-    ASSERT_TRUE(isEqual(n, glm::dvec4(0, 0, 1, 0)));
+    ASSERT_TRUE(n == glm::dvec4(0, 0, 1, 0));
 }
 
 TEST(LightShadingTests, NormalAtPointNonAxialPoint)
 {
     auto s = Sphere();
     auto n = s.normalAt(glm::dvec4(sqrt(3)/3, sqrt(3)/3, sqrt(3)/3, 1));
-    ASSERT_TRUE(isEqual(n, glm::dvec4(sqrt(3)/3, sqrt(3)/3, sqrt(3)/3, 0)));
+    ASSERT_TRUE(n == glm::dvec4(sqrt(3)/3, sqrt(3)/3, sqrt(3)/3, 0));
 }
 
 TEST(LightShadingTests, NormalIsNormalized)
 {
     auto s = Sphere();
     auto n = s.normalAt(glm::dvec4(sqrt(3)/3, sqrt(3)/3, sqrt(3)/3, 1));
-    ASSERT_TRUE(isEqual(n, glm::normalize(n)));
+    ASSERT_TRUE(n == glm::normalize(n));
 }
 
 TEST(LightShadingTests, TranslatedSphereNormal)
@@ -81,17 +81,17 @@ TEST(LightShadingTests, VectorReflectSlantedSurface)
 
 TEST(LightShadingTests, PointLightInstantiation)
 {
-    auto intensity = glm::vec3(1, 1, 1);
+    auto intensity = glm::dvec3(1, 1, 1);
     auto position = glm::dvec4(0, 0, 0, 1);
     auto light = PointLight {glm::vec3(1, 1, 1), glm::dvec4(0, 0, 0, 1)};
-    ASSERT_TRUE(isEqual(light.position, position));
-    ASSERT_TRUE(isEqual(light.intensity, intensity));
+    ASSERT_TRUE(light.position == position);
+    ASSERT_TRUE(light.intensity == intensity);
 }
 
 TEST(LightShadingTests, MaterialInstantiation)
 {
     auto m = Material();
-    ASSERT_TRUE(isEqual(m.getColor(), glm::vec3(1, 1, 1)));
+    ASSERT_TRUE(m.getColor() == glm::dvec3(1, 1, 1));
     ASSERT_FLOAT_EQ(m.getAmbient(), 0.1);
     ASSERT_FLOAT_EQ(m.getDiffuse(), 0.9);
     ASSERT_FLOAT_EQ(m.getSpecular(), 0.9);
@@ -137,7 +137,7 @@ TEST(LightShadingTests, EyeOffset45Degrees)
     auto lightPosition = glm::dvec4(0, 0, -10, 1);
     auto light = PointLight {intensity, lightPosition};
     auto result = lighting(m, light, position, eyeVector, normalVector);
-    ASSERT_TRUE(isEqual(result, glm::vec3(1.0, 1.0, 1.0)));
+    ASSERT_TRUE(result == glm::dvec3(1.0, 1.0, 1.0));
 }
 
 TEST(LightShadingTests, LightOffset45Degrees)
@@ -150,7 +150,7 @@ TEST(LightShadingTests, LightOffset45Degrees)
     auto lightPosition = glm::dvec4(0, 10, -10, 1);
     auto light = PointLight {intensity, lightPosition};
     auto result = lighting(m, light, position, eyeVector, normalVector);
-    ASSERT_TRUE(isEqual(result, glm::vec3(0.7364, 0.7364, 0.7364)));
+    ASSERT_TRUE(isEqual(result, glm::dvec3(0.7364, 0.7364, 0.7364)));
 }
 
 TEST(LightShadingTests, EyeInPathOfReflection)
@@ -163,7 +163,7 @@ TEST(LightShadingTests, EyeInPathOfReflection)
     auto lightPosition = glm::dvec4(0, 10, -10, 1);
     auto light = PointLight {intensity, lightPosition};
     auto result = lighting(m, light, position, eyeVector, normalVector);
-    ASSERT_TRUE(isEqual(result, glm::vec3(1.6364, 1.6364, 1.6364)));
+    ASSERT_TRUE(isEqual(result, glm::dvec3(1.6364, 1.6364, 1.6364)));
 }
 
 TEST(LightShadingTests, LightBehindSurface)
@@ -177,5 +177,5 @@ TEST(LightShadingTests, LightBehindSurface)
     auto light = PointLight {intensity, lightPosition};
     auto result = lighting(m, light, position, eyeVector, normalVector);
     toString(result);
-    ASSERT_TRUE(isEqual(result, glm::vec3(0.1, 0.1, 0.1)));
+    ASSERT_TRUE(result == glm::dvec3(0.1, 0.1, 0.1));
 }

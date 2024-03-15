@@ -38,8 +38,7 @@ file(GLOB_RECURSE TESTS
         tests/*.cpp
         tests/*.cc)
 
-add_executable(EchoRay ${SOURCES}
-        src/pointlight.h)
+add_executable(EchoRay ${SOURCES})
 target_link_libraries(EchoRay PRIVATE sfml-graphics sfml-window glm)
 target_compile_features(EchoRay PRIVATE cxx_std_23)
 

@@ -54,22 +54,11 @@ int main()
                     auto point = r.position(hit(xs).getT());
                     auto normal = hit(xs).getObject().normalAt(point);
                     auto eye = -r.getDirection();
-                    auto color = lighting(hit(xs).getObject().getMaterial(), pointLight, point, eye, normal) * 255.0;
+                    auto color = toRGB(lighting(hit(xs).getObject().getMaterial(), pointLight, point, eye, normal));
+
                     sf::RectangleShape rectangle(sf::Vector2f(1, 1));
                     rectangle.setPosition(x, y);
-                    if (color.x > 255.0)
-                    {
-                        color.x = 255.0;
-                    }
-                    if (color.y > 255.0)
-                    {
-                        color.y = 255.0;
-                    }
-                    if (color.z > 255.0)
-                    {
-                        color.z = 255.0;
-                    }
-                    rectangle.setFillColor({static_cast<sf::Uint8>(color.x), static_cast<sf::Uint8>(color.y), static_cast<sf::Uint8>(color.z)});
+                    rectangle.setFillColor({color.r, color.g, color.b});
                     window.draw(rectangle);
                 }
             }
