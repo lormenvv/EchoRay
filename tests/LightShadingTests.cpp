@@ -6,7 +6,7 @@
 #include "../src/sphere.h"
 #include "../src/utility.h"
 #include "../src/intersection.h"
-#include"../src/pointlight.h"
+#include"../src/raytracingstructs.h"
 
 TEST(LightShadingTests, NormalAtPointOnXAxis)
 {

@@ -4,9 +4,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include "pointlight.h"
+#include "raytracingstructs.h"
 #include "sphere.h"
-#include "world.h"
 
 
 class World {
@@ -16,6 +15,8 @@ public:
         m_lights = std::vector<PointLight>();
         m_objects = std::vector<Sphere>();
     }
+    void addLight(PointLight light);
+    void addObject(Sphere object);
     std::vector<PointLight> getLights() const
     {
         return m_lights;

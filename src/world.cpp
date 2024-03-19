@@ -1,7 +1,3 @@
-//
-// Created by david on 3/14/2024.
-//
-
 #include "world.h"
 
 World defaultWorld()
@@ -21,4 +17,14 @@ World defaultWorld()
 
     defaultWorld.setObjects(std::vector<Sphere>({s1, s2}));
     return defaultWorld;
+}
+
+void World::addLight(PointLight light)
+{
+    m_lights.push_back(light);
+}
+
+void World::addObject(Sphere object)
+{
+    m_objects.push_back(object);
 }

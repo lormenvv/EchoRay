@@ -6,6 +6,15 @@ bool equals(float a, float b) {
 	}
 	return false;
 }
+bool isEqual(glm::dmat4 m1, glm::dmat4 m2)
+{
+	if (abs(glm::determinant(m2 - m1)) < 0.00001)
+	{
+		return true;
+	}
+	return false;
+}
+
 
 bool isEqual(glm::dvec4 v1, glm::dvec4 v2) {
 	return equals(v1.x, v2.x) && equals(v1.y, v2.y) && equals(v1.z, v2.z) && equals(v1.w, v2.w);
@@ -58,6 +67,25 @@ std::vector<Intersection> worldIntersect(World world, Ray ray)
 	return worldIntersections;
 }
 
+Computations prepareComputations(Intersection intersection, Ray ray)
+{
+	Computations computation;
+	computation.t = intersection.getT();
+	computation.object = intersection.getObject();
+	computation.point = ray.position(computation.t);
+	computation.eye = -ray.getDirection();
+	computation.normal = computation.object.normalAt(computation.point);
+	computation.inside = false;
+	if (glm::dot(computation.normal, computation.eye) < 0)
+	{
+		computation.inside = true;
+		computation.normal = -computation.normal;
+	}
+
+	return computation;
+}
+
+
 glm::dvec4 reflect(glm::dvec4 in, glm::dvec4 normal)
 {
 	return in - normal * 2.0 * glm::dot(in, normal);
@@ -95,6 +123,45 @@ glm::dvec3 lighting(Material material, PointLight light, glm::dvec4 point, glm::
 	;
 	return ambient + diffuse + specular;
 }
+
+glm::dvec3 shadeHit(World world, Computations computation)
+{
+	auto totalLighting = glm::dvec3(0);
+	for (PointLight p : world.getLights())
+	{
+		totalLighting += lighting(computation.object.getMaterial(), p, computation.point, computation.eye,
+			computation.normal);
+	}
+	return totalLighting;
+}
+
+glm::dvec3 colorAt(World world, Ray ray)
+{
+	auto intersections = worldIntersect(world, ray);
+	auto color = glm::dvec3(0);
+	if (hit(intersections).getT() < 0)
+	{
+		return color;
+	}
+
+	auto computation = prepareComputations(hit(intersections), ray);
+	color = shadeHit(world, computation);
+	return color;
+}
+
+glm::dmat4 viewTransform(glm::dvec4 from, glm::dvec4 to, glm::dvec4 up)
+{
+	auto forward = glm::normalize(make_vec3(to) - glm::make_vec3(from));
+	auto upNormalized = glm::normalize(glm::make_vec3(up));
+	auto left = glm::cross(forward, upNormalized);
+	auto trueUp = glm::cross(left, forward);
+	auto orientation = glm::dmat4(left.x, left.y, left.z, 0,
+								  trueUp.x, trueUp.y, trueUp.z, 0,
+								 -forward.x, -forward.y, -forward.z, 0,
+								 0, 0, 0, 1);
+	return orientation * glm::translate(glm::dmat4(1), glm::dvec3(-from.x, -from.y, -from.z));
+}
+
 
 glm::u8vec3 toRGB(glm::dvec3 color)
 {

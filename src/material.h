@@ -1,5 +1,6 @@
 #ifndef MATERIAL_H
 #define MATERIAL_H
+#include <iostream>
 #include "glm/vec3.hpp"
 
 class Material
@@ -65,6 +66,11 @@ public:
     void setShininess(double shininess)
     {
         m_shininess = shininess;
+    }
+    void toString()
+    {
+        std::cout << "Ambient: " + std::to_string(m_ambient) + "\n Diffuse: " + std::to_string(m_diffuse) +
+            "\n Specular: " + std::to_string(m_specular) + "\n Shininess: " + std::to_string(m_shininess) << std::endl;
     }
 private:
     glm::dvec3 m_color{};
