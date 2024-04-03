@@ -16,11 +16,11 @@ struct Computations
 {
     double t;
     Sphere object;
-    glm::dvec4 point, eye, normal;
+    glm::dvec4 point, eye, normal, overPoint;
     bool inside;
     bool isEqual(Computations c) const
     {
-        return t == c.t && object == c.object && point == c.point && eye == c.eye && normal == c.normal;
+        return t == c.t && object == c.object && point == c.point && eye == c.eye && normal == c.normal && overPoint == c.overPoint;
     }
 };
 

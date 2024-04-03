@@ -1,14 +1,14 @@
 #include "utility.h"
 
 bool equals(float a, float b) {
-	if (abs(a - b) < 0.00001) {
+	if (abs(a - b) < EPSILON) {
 		return true;
 	}
 	return false;
 }
 bool isEqual(glm::dmat4 m1, glm::dmat4 m2)
 {
-	if (abs(glm::determinant(m2 - m1)) < 0.00001)
+	if (abs(glm::determinant(m2 - m1)) < EPSILON)
 	{
 		return true;
 	}
@@ -76,6 +76,7 @@ Computations prepareComputations(Intersection intersection, Ray ray)
 	computation.eye = -ray.getDirection();
 	computation.normal = computation.object.normalAt(computation.point);
 	computation.inside = false;
+	computation.overPoint = computation.point + computation.normal * EPSILON;
 	if (glm::dot(computation.normal, computation.eye) < 0)
 	{
 		computation.inside = true;
@@ -92,7 +93,7 @@ glm::dvec4 reflect(glm::dvec4 in, glm::dvec4 normal)
 }
 
 
-glm::dvec3 lighting(Material material, PointLight light, glm::dvec4 point, glm::dvec4 eye, glm::dvec4 normal)
+glm::dvec3 lighting(Material material, PointLight light, glm::dvec4 point, glm::dvec4 eye, glm::dvec4 normal, bool inShadow)
 {
 	auto effectiveColor = material.getColor() * light.intensity;
 	auto lightVector = glm::normalize(light.position - point);
@@ -120,17 +121,21 @@ glm::dvec3 lighting(Material material, PointLight light, glm::dvec4 point, glm::
 			specular = light.intensity * material.getSpecular() * factor;
 		}
 	}
-	;
-	return ambient + diffuse + specular;
+	if (inShadow)
+	{
+		return ambient;
+	}
+	return ambient + specular + diffuse;
 }
 
 glm::dvec3 shadeHit(World world, Computations computation)
 {
 	auto totalLighting = glm::dvec3(0);
+	auto shadowed = isShadowed(world, computation.overPoint);
 	for (PointLight p : world.getLights())
 	{
-		totalLighting += lighting(computation.object.getMaterial(), p, computation.point, computation.eye,
-			computation.normal);
+		totalLighting += lighting(computation.object.getMaterial(), p, computation.overPoint, computation.eye,
+			computation.normal, shadowed);
 	}
 	return totalLighting;
 }
@@ -147,6 +152,20 @@ glm::dvec3 colorAt(World world, Ray ray)
 	auto computation = prepareComputations(hit(intersections), ray);
 	color = shadeHit(world, computation);
 	return color;
+}
+
+bool isShadowed(World world, glm::dvec4 point)
+{
+	auto v = world.getLights()[0].position - point;
+	auto distance = glm::length(v);
+	auto direction = glm::normalize(v);
+	auto pointToLight = Ray(point, direction);
+	auto intersections = worldIntersect(world, pointToLight);
+	if (hit(intersections).getT() > 0 && hit(intersections).getT() < distance)
+	{
+		return true;
+	}
+	return false;
 }
 
 glm::dmat4 viewTransform(glm::dvec4 from, glm::dvec4 to, glm::dvec4 up)

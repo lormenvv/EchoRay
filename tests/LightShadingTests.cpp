@@ -179,3 +179,73 @@ TEST(LightShadingTests, LightBehindSurface)
     toString(result);
     ASSERT_TRUE(result == glm::dvec3(0.1, 0.1, 0.1));
 }
+
+//Shadowing Tests
+
+TEST(LightShadingTests, LightingWithSurfaceInShadow)
+{
+    auto m = Material();
+    auto position = glm::dvec4(0, 0, 0, 1);
+    auto eyeVector = glm::dvec4(0, 0, -1, 0);
+    auto normalVector = glm::dvec4(0, 0, -1, 0);
+    auto intensity = glm::vec3(1, 1, 1);
+    auto lightPosition = glm::dvec4(0, 0, -10, 1);
+    auto light = PointLight {intensity, lightPosition};
+    auto inShadow = true;
+    auto result = lighting(m, light, position, eyeVector, normalVector, inShadow);
+    ASSERT_TRUE(result == glm::dvec3(0.1, 0.1, 0.1));
+}
+
+TEST(LightShadingTests, PointLightCollinear)
+{
+    auto w = defaultWorld();
+    auto p = glm::dvec4(0, 10, 0, 1);
+    ASSERT_FALSE(isShadowed(w, p));
+}
+
+TEST(LightShadingTests, ObjectBetweenPointAndLight)
+{
+    auto w = defaultWorld();
+    auto p = glm::dvec4(10, -10, 10, 1);
+    ASSERT_TRUE(isShadowed(w, p));
+}
+
+TEST(LightShadingTests, ObjectBehindLight)
+{
+    auto w = defaultWorld();
+    auto p = glm::dvec4(-20, 20, -20, 1);
+    ASSERT_FALSE(isShadowed(w, p));
+}
+
+TEST(LightShadingTests, ObjectBehindPoint)
+{
+    auto w = defaultWorld();
+    auto p = glm::dvec4(-2, 2, -2, 1);
+    ASSERT_FALSE(isShadowed(w, p));
+}
+
+TEST(LightShadingTests, ShadeHitGivenIntersectionInShadow) {
+    auto w = World();
+    auto light = PointLight {glm::dvec3(1, 1, 1), glm::dvec4(0, 0, -10, 1)};
+    w.setLights(std::vector<PointLight> {light});
+    auto s1 = Sphere();
+    auto s2 = Sphere();
+    s2.setTransform(glm::translate(glm::dmat4(1.0), glm::dvec3(0, 0, 10)));
+    w.setObjects(std::vector<Sphere> {s1, s2});
+    auto r = Ray(glm::dvec4(0, 0, 5, 1), glm::dvec4(0, 0, 1, 0));
+    auto i = Intersection(4, s2);
+    auto computation = prepareComputations(i, r);
+    auto c = shadeHit(w, computation);
+    toString(c);
+    ASSERT_TRUE(isEqual(c, glm::dvec3(0.1)));
+}
+
+TEST(LightShadingTests, HitShouldOffsetPoint) {
+    auto r = Ray(glm::dvec4(0, 0, -5, 1), glm::dvec4(0, 0, 1, 0));
+    auto shape = Sphere();
+    shape.setTransform(glm::translate(glm::dmat4(1.0), glm::dvec3(0, 0, 1)));
+    auto i = Intersection(5, shape);
+    auto computation = prepareComputations(i, r);
+    ASSERT_TRUE(computation.overPoint.z < -EPSILON / 2);
+    ASSERT_TRUE(computation.point.z > computation.overPoint.z);
+}
